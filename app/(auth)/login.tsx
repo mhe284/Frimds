@@ -1,9 +1,16 @@
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { Link, router } from 'expo-router';
+import React, { useState } from 'react';
 import {
     Alert,
-    StyleSheet
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
 } from 'react-native';
 
 export default function LoginScreen() {
@@ -29,12 +36,79 @@ export default function LoginScreen() {
     setTimeout(() => {
       setIsLoading(false);
       Alert.alert('Success', 'Login successful!');
-
+      
       // Navigate to main app after successful login
       router.replace('/(tabs)');
     }, 1000);
   };
 
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={[styles.container, { backgroundColor }]}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <ThemedView style={styles.content}>
+          <ThemedText type="title" style={styles.title}>
+            Welcome Back
+          </ThemedText>
+          <ThemedText style={styles.subtitle}>
+            Sign in to continue
+          </ThemedText>
+
+          <ThemedView style={styles.form}>
+            <ThemedText style={styles.label}>Email</ThemedText>
+            <TextInput
+              style={[styles.input, { color: textColor, borderColor }]}
+              placeholder="Enter your email"
+              placeholderTextColor={borderColor}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoComplete="email"
+            />
+
+            <ThemedText style={styles.label}>Password</ThemedText>
+            <TextInput
+              style={[styles.input, { color: textColor, borderColor }]}
+              placeholder="Enter your password"
+              placeholderTextColor={borderColor}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              autoComplete="password"
+            />
+
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: buttonColor }]}
+              onPress={handleLogin}
+              disabled={isLoading}
+            >
+              <ThemedText style={styles.buttonText}>
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </ThemedText>
+            </TouchableOpacity>
+
+            <ThemedView style={styles.footer}>
+              <ThemedText>Don't have an account? </ThemedText>
+              <Link href="/(auth)/signup" asChild>
+                <TouchableOpacity>
+                  <ThemedText type="link" style={styles.link}>
+                    Sign Up
+                  </ThemedText>
+                </TouchableOpacity>
+              </Link>
+            </ThemedView>
+          </ThemedView>
+        </ThemedView>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
 }
 
 const styles = StyleSheet.create({
