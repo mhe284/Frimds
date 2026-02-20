@@ -36,6 +36,22 @@ export default function HomeScreen() {
           to open developer tools.
         </ThemedText>
       </ThemedView>
+      
+      {/* - ADDED: Authentication Pages*/}
+      <ThemedView style={styles.stepContainer}> 
+        <ThemedText type="subtitle">🔐 Auth Pages</ThemedText>
+        <Link href="/(auth)/login" asChild>
+          <ThemedText type="link" style={{ fontSize: 18, marginVertical: 8 }}>
+            → Go to Login Page
+          </ThemedText>
+        </Link>
+        <Link href="/(auth)/signup" asChild>
+          <ThemedText type="link" style={{ fontSize: 18, marginVertical: 8 }}>
+            → Go to Sign Up Page
+          </ThemedText>
+        </Link>
+      </ThemedView>
+
       <ThemedView style={styles.stepContainer}>
         <Link href="/modal">
           <Link.Trigger>
