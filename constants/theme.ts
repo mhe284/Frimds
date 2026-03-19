@@ -19,11 +19,11 @@ export const Colors = {
   },
   dark: {
     text: '#FFEFF7',
-    background: '#1A1C20',      // dark, slightly warm background
-    tint: tintColorDark,        // pinkish accent
-    icon: '#9CCFB8',            // soft green
-    tabIconDefault: '#9CCFB8',
-    tabIconSelected: tintColorDark,
+    background: '#140914',      // very dark, slightly pink/purple
+    tint: '#FF4F8B',            // bright dark-pink accent
+    icon: '#4FA57A',            // dark-ish green for icons
+    tabIconDefault: '#4FA57A',  // inactive tabs = green
+    tabIconSelected: '#FF4F8B', // active tab = dark pink
   },
 };
 
