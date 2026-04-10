@@ -1,9 +1,10 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
-import { Image, type ImageSourcePropType } from 'react-native';
+import { ActivityIndicator, Image, View, type ImageSourcePropType } from 'react-native';
 
 import { HapticTab } from '../../components/haptic-tab';
 import { Colors } from '../../constants/theme';
+import { useAuth } from '../../hooks/use-auth';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 
 const homeTabIcon = require('../../assets/images/tabicons/Home Icon.png');
@@ -32,6 +33,19 @@ function TabIcon({
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { session, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (!session) {
+    return <Redirect href="/(auth)/login" />;
+  }
 
   return (
     <Tabs

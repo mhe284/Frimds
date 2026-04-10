@@ -1,16 +1,17 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { supabase } from '@/lib/supabase';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
 
 export default function SignUpScreen() {
@@ -42,16 +43,35 @@ export default function SignUpScreen() {
     }
 
     setIsLoading(true);
-    
-    // TODO: Implement your authentication logic here
-    // Example: await signUp(email, password, name);
-    
-    setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert('Success', 'Account created successfully!');
-      // Navigate to main app after successful signup
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          data: {
+            full_name: name.trim(),
+          },
+        },
+      });
+
+      if (error) {
+        Alert.alert('Sign up failed', error.message);
+        return;
+      }
+
+      if (!data.session) {
+        Alert.alert('Check your email', 'We sent you a confirmation link to finish signing up.');
+        router.replace('/(auth)/login');
+        return;
+      }
+
       router.replace('/(tabs)');
-    }, 1000);
+    } catch {
+      Alert.alert('Sign up failed', 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

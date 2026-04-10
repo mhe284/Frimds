@@ -1,16 +1,17 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { supabase } from '@/lib/supabase';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
 
 export default function LoginScreen() {
@@ -30,16 +31,24 @@ export default function LoginScreen() {
     }
 
     setIsLoading(true);
-    
-    // Add Authentication Logic Here
-    
-    setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert('Success', 'Login successful!');
-      
-      // Navigate to main app after successful login
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (error) {
+        Alert.alert('Login failed', error.message);
+        return;
+      }
+
       router.replace('/(tabs)');
-    }, 1000);
+    } catch {
+      Alert.alert('Login failed', 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -95,7 +104,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
 
             <ThemedView style={styles.footer}>
-              <ThemedText>Don't have an account? </ThemedText>
+              <ThemedText>{"Don't have an account? "}</ThemedText>
               <Link href="/(auth)/signup" asChild>
                 <TouchableOpacity>
                   <ThemedText type="link" style={styles.link}>

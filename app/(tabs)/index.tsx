@@ -13,7 +13,7 @@ export default function HomeScreen() {
       </ThemedText>
 
       <ThemedText type="subtitle" style={styles.subheading}>
-        Where do you want to go?
+        guess
       </ThemedText>
 
       <ThemedView style={styles.bubblesRow}>
