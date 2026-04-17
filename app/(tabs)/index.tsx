@@ -31,19 +31,16 @@ export default function HomeScreen() {
       </ThemedText>
 
       <ThemedView style={styles.bubblesRow}>
-        {/* Home bubble (stays on this screen) */}
         <Pressable style={[styles.bubble, styles.homeBubble]}>
           <ThemedText style={styles.bubbleLabel}>Home</ThemedText>
         </Pressable>
 
-        {/* Events / Explore bubble */}
         <Link href="/(tabs)/explore" asChild>
           <Pressable style={[styles.bubble, styles.eventsBubble]}>
             <ThemedText style={styles.bubbleLabel}>Events</ThemedText>
           </Pressable>
         </Link>
 
-        {/* Profile bubble */}
         <Link href="/(tabs)/profile" asChild>
           <Pressable style={[styles.bubble, styles.profileBubble]}>
             <ThemedText style={styles.bubbleLabel}>Profile</ThemedText>

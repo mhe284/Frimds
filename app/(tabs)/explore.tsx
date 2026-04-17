@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
-/** Replace with real friend data (e.g. from Supabase). Empty = show hint state. */
+/** Replace with real friend data. Empty = hint card. */
 const friends: { id: string }[] = [];
 
 export default function ExploreScreen() {
