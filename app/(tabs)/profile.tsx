@@ -17,10 +17,7 @@ export default function ProfileScreen() {
             paddingLeft: 18 + insets.left,
           },
         ]}>
-        <View style={styles.profileWord}>
-          <Text style={[styles.profileLetters, styles.profileLettersShadow]}>profile</Text>
-          <Text style={[styles.profileLetters, styles.profileLettersFace]}>profile</Text>
-        </View>
+        <Text style={styles.profileLetters}>profile</Text>
       </View>
 
       {/* Add profile content here */}
@@ -41,26 +38,17 @@ const styles = StyleSheet.create({
     left: 0,
     zIndex: 10,
   },
-  profileWord: {
-    position: 'relative',
-  },
   profileLetters: {
     fontFamily: 'Fredoka_600SemiBold',
     fontSize: 36,
+    lineHeight: 42,
     letterSpacing: 2,
     textTransform: 'lowercase',
-  },
-  profileLettersShadow: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    color: '#6B5508',
-    transform: [{ translateX: 2 }, { translateY: 2 }],
-  },
-  profileLettersFace: {
-    color: '#B8860B',
-    textShadowColor: 'rgba(255, 248, 220, 0.55)',
-    textShadowOffset: { width: 0, height: -1 },
-    textShadowRadius: 1,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+    color: '#D1BE9A',
+    textShadowColor: '#A3865C',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 0,
   },
 });

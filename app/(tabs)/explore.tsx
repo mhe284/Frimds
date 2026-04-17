@@ -1,94 +1,65 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
-import { Collapsible } from '@/components/ui/collapsible';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+import { ThemedView } from '@/components/themed-view';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
+
+/** Replace with real friend data (e.g. from Supabase). Empty = show hint state. */
+const friends: { id: string }[] = [];
 
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
+  const colorScheme = useColorScheme() ?? 'light';
+  const hasFriends = friends.length > 0;
+
+  const cardBg = useThemeColor({ light: '#FFFFFF', dark: '#2A1826' }, 'background');
+  const cardBorder = useThemeColor({ light: '#F0D5E4', dark: '#3D2840' }, 'icon');
+  const avatarBorder = useThemeColor({ light: '#E8C4D8', dark: '#5C3D52' }, 'icon');
+  const avatarFill = useThemeColor({ light: '#FFF9FC', dark: '#1E121C' }, 'background');
+  const hintColor = useThemeColor({ light: '#6B5A62', dark: '#C4B0BC' }, 'text');
+
+  const emptyCardBg =
+    colorScheme === 'dark' ? 'rgba(42, 24, 38, 0.42)' : 'rgba(255, 255, 255, 0.48)';
+  const emptyCardBorder =
+    colorScheme === 'dark' ? 'rgba(93, 60, 82, 0.4)' : 'rgba(240, 213, 228, 0.55)';
+
+  const contentTop = insets.top + 10 + 42 + 16;
 
   return (
-    <View style={styles.screen}>
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-        headerImage={
-          <IconSymbol
-            size={310}
-            color="#808080"
-            name="chevron.left.forwardslash.chevron.right"
-            style={styles.headerImage}
-          />
-        }>
-        <ThemedText>This screen is updating from the latest code.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
+    <ThemedView style={styles.screen}>
+      <View style={[styles.body, { paddingTop: contentTop, paddingHorizontal: 16 }]}>
+        {hasFriends ? (
+          <View style={[styles.friendsCard, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator
+              contentContainerStyle={styles.friendsRow}
+              keyboardShouldPersistTaps="handled">
+              {friends.map((f) => (
+                <View
+                  key={f.id}
+                  style={[
+                    styles.friendAvatar,
+                    { backgroundColor: avatarFill, borderColor: avatarBorder },
+                  ]}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        ) : (
+          <View
+            style={[
+              styles.emptyFriendsCard,
+              { backgroundColor: emptyCardBg, borderColor: emptyCardBorder },
+            ]}>
+            <ThemedText style={[styles.emptyHint, { color: hintColor }]}>
+              Add friends and they&apos;ll show up here.
             </ThemedText>
-          ),
-        })}
-      </Collapsible>
-      </ParallaxScrollView>
+          </View>
+        )}
+      </View>
 
       <View
         pointerEvents="none"
@@ -99,12 +70,9 @@ export default function ExploreScreen() {
             paddingLeft: 18 + insets.left,
           },
         ]}>
-        <View style={styles.bubbleWord}>
-          <Text style={[styles.bubbleLetters, styles.bubbleLettersShadow]}>explore</Text>
-          <Text style={[styles.bubbleLetters, styles.bubbleLettersFace]}>explore</Text>
-        </View>
+        <Text style={styles.bubbleLetters}>explore</Text>
       </View>
-    </View>
+    </ThemedView>
   );
 }
 
@@ -112,11 +80,41 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  body: {
+    flex: 1,
+  },
+  friendsCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    overflow: 'hidden',
+  },
+  emptyFriendsCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    paddingVertical: 22,
+    paddingHorizontal: 18,
+    minHeight: 96,
+    justifyContent: 'center',
+  },
+  emptyHint: {
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center',
+    opacity: 0.92,
+  },
+  friendsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 4,
+  },
+  friendAvatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 2,
   },
   bubbleTitleAnchor: {
     position: 'absolute',
@@ -124,26 +122,17 @@ const styles = StyleSheet.create({
     left: 0,
     zIndex: 10,
   },
-  bubbleWord: {
-    position: 'relative',
-  },
   bubbleLetters: {
     fontFamily: 'Fredoka_600SemiBold',
     fontSize: 36,
+    lineHeight: 42,
     letterSpacing: 2,
     textTransform: 'lowercase',
-  },
-  bubbleLettersShadow: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    color: '#F0A8C8',
-    transform: [{ translateX: 2 }, { translateY: 2 }],
-  },
-  bubbleLettersFace: {
-    color: '#FFE8F4',
-    textShadowColor: 'rgba(255, 255, 255, 0.9)',
-    textShadowOffset: { width: 0, height: -1 },
-    textShadowRadius: 1,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+    color: '#B46885',
+    textShadowColor: '#8E4F66',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 0,
   },
 });
