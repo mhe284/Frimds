@@ -1,41 +1,36 @@
+import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const cardBg = useThemeColor({ light: '#FFFFFF', dark: '#2A1826' }, 'background');
-  const cardBorder = useThemeColor({ light: '#D9EAD9', dark: '#35523F' }, 'icon');
-  const hintColor = useThemeColor({ light: '#5B6B5F', dark: '#C4D4C8' }, 'text');
-  const tint = useThemeColor({}, 'tint');
+  const cardBg = useThemeColor({ light: '#FFF7FB', dark: '#2A1826' }, 'background');
+  const cardBorder = useThemeColor({ light: '#EBC9D8', dark: '#5A364C' }, 'icon');
 
   const contentTop = insets.top + 10 + 42 + 16;
 
   return (
     <ThemedView style={styles.container}>
       <View style={[styles.body, { paddingTop: contentTop, paddingHorizontal: 16 }]}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.newPostCard,
-            {
-              backgroundColor: cardBg,
-              borderColor: cardBorder,
-              opacity: pressed ? 0.9 : 1,
-            },
-          ]}>
-          <ThemedText type="defaultSemiBold" style={styles.newPostTitle}>
-            New post
-          </ThemedText>
-          <ThemedText style={[styles.newPostHint, { color: hintColor }]}>
-            Share something with your friends.
-          </ThemedText>
-          <View style={[styles.newPostPill, { backgroundColor: tint }]}>
-            <ThemedText style={styles.newPostPillText}>Create</ThemedText>
-          </View>
-        </Pressable>
+        <Link href="/new-post" asChild>
+          <Pressable
+            style={({ pressed }) => [
+              styles.newPostCard,
+              {
+                backgroundColor: cardBg,
+                borderColor: cardBorder,
+                opacity: pressed ? 0.9 : 1,
+              },
+            ]}>
+            <View style={styles.plusSquare}>
+              <Text style={styles.plusText}>+</Text>
+            </View>
+            <Text style={styles.newPostLabel}>New post</Text>
+          </Pressable>
+        </Link>
       </View>
 
       <View
@@ -62,32 +57,33 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   newPostCard: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     borderRadius: 18,
     borderWidth: 1,
-    paddingVertical: 18,
-    paddingHorizontal: 16,
-    minHeight: 110,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  plusSquare: {
+    width: 28,
+    height: 28,
+    borderRadius: 9,
+    alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#B46885',
   },
-  newPostTitle: {
-    fontSize: 20,
-    marginBottom: 6,
-  },
-  newPostHint: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  newPostPill: {
-    alignSelf: 'flex-start',
-    borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-  },
-  newPostPillText: {
+  plusText: {
     color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
+    fontSize: 20,
+    lineHeight: 20,
+    fontWeight: '700',
+  },
+  newPostLabel: {
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 18,
+    color: '#A55474',
   },
   homeTitleAnchor: {
     position: 'absolute',
