@@ -1,10 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors } from '@/constants/theme';
-import { Link } from 'expo-router';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -22,31 +19,6 @@ export default function HomeScreen() {
         ]}>
         <Text style={styles.homeLetters}>home</Text>
       </View>
-      <ThemedText type="title" style={styles.heading}>
-        Frimds
-      </ThemedText>
-
-      <ThemedText type="subtitle" style={styles.subheading}>
-        guess
-      </ThemedText>
-
-      <ThemedView style={styles.bubblesRow}>
-        <Pressable style={[styles.bubble, styles.homeBubble]}>
-          <ThemedText style={styles.bubbleLabel}>Home</ThemedText>
-        </Pressable>
-
-        <Link href="/(tabs)/explore" asChild>
-          <Pressable style={[styles.bubble, styles.eventsBubble]}>
-            <ThemedText style={styles.bubbleLabel}>Events</ThemedText>
-          </Pressable>
-        </Link>
-
-        <Link href="/(tabs)/profile" asChild>
-          <Pressable style={[styles.bubble, styles.profileBubble]}>
-            <ThemedText style={styles.bubbleLabel}>Profile</ThemedText>
-          </Pressable>
-        </Link>
-      </ThemedView>
     </ThemedView>
   );
 }
@@ -55,9 +27,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
   },
   homeTitleAnchor: {
     position: 'absolute',
@@ -78,39 +47,5 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 0,
   },
-  heading: {
-    marginBottom: 8,
-  },
-  subheading: {
-    marginBottom: 32,
-  },
-  bubblesRow: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  bubble: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
-  },
-  homeBubble: {
-    backgroundColor: Colors.light.tint,
-  },
-  eventsBubble: {
-    backgroundColor: Colors.light.icon,
-  },
-  profileBubble: {
-    backgroundColor: Colors.light.tabIconDefault,
-  },
-  bubbleLabel: {
-    color: '#fff',
-    fontWeight: '600',
-  },
+
 });
