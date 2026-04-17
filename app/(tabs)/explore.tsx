@@ -1,36 +1,30 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ExternalLink } from '@/components/external-link';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Collapsible } from '@/components/ui/collapsible';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 
 export default function ExploreScreen() {
+  const insets = useSafeAreaInsets();
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
+    <View style={styles.screen}>
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+        headerImage={
+          <IconSymbol
+            size={310}
+            color="#808080"
+            name="chevron.left.forwardslash.chevron.right"
+            style={styles.headerImage}
+          />
+        }>
+        <ThemedText>This screen is updating from the latest code.</ThemedText>
       <Collapsible title="File-based routing">
         <ThemedText>
           This app has two screens:{' '}
@@ -94,19 +88,62 @@ export default function ExploreScreen() {
           ),
         })}
       </Collapsible>
-    </ParallaxScrollView>
+      </ParallaxScrollView>
+
+      <View
+        pointerEvents="none"
+        style={[
+          styles.bubbleTitleAnchor,
+          {
+            paddingTop: insets.top + 10,
+            paddingLeft: 18 + insets.left,
+          },
+        ]}>
+        <View style={styles.bubbleWord}>
+          <Text style={[styles.bubbleLetters, styles.bubbleLettersShadow]}>explore</Text>
+          <Text style={[styles.bubbleLetters, styles.bubbleLettersFace]}>explore</Text>
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   headerImage: {
     color: '#808080',
     bottom: -90,
     left: -35,
     position: 'absolute',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  bubbleTitleAnchor: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 10,
+  },
+  bubbleWord: {
+    position: 'relative',
+  },
+  bubbleLetters: {
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 36,
+    letterSpacing: 2,
+    textTransform: 'lowercase',
+  },
+  bubbleLettersShadow: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    color: '#F0A8C8',
+    transform: [{ translateX: 2 }, { translateY: 2 }],
+  },
+  bubbleLettersFace: {
+    color: '#FFE8F4',
+    textShadowColor: 'rgba(255, 255, 255, 0.9)',
+    textShadowOffset: { width: 0, height: -1 },
+    textShadowRadius: 1,
   },
 });
