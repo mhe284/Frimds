@@ -22,7 +22,7 @@ export default function LoginScreen() {
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const borderColor = useThemeColor({ light: '#ccc', dark: '#444' }, 'text');
-  const buttonColor = useThemeColor({ light: '#007AFF', dark: '#0A84FF' }, 'tint');
+  const buttonColor = useThemeColor({ light: '#58dc79', dark: '#30D158' }, 'tint');
 
   const handleLogin = async () => {
     if (!email || !password) {
