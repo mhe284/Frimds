@@ -1,6 +1,6 @@
 import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useFrimdsData, type EventCategory } from '@/hooks/use-frimds-data';
 import { useProfile } from '@/hooks/use-profile';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -27,13 +28,20 @@ const avatarOptions = {
 
 type AvatarOptionKey = keyof typeof avatarOptions;
 
+const interestsSource: EventCategory[] = ['Gaming', 'Music', 'Sports', 'Art', 'Food', 'Streaming'];
+
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { profile, isLoading, error, addFriendByCode } = useProfile();
+  const { profile: customization, updateProfile, toggleInterest, selectedInterests } = useFrimdsData();
   const [friendCodeInput, setFriendCodeInput] = useState('');
+  const [displayNameInput, setDisplayNameInput] = useState(customization.displayName);
+  const [bioInput, setBioInput] = useState(customization.bio);
+  const [pronounsInput, setPronounsInput] = useState(customization.pronouns);
+  const [cityInput, setCityInput] = useState(customization.city);
   const [addLoading, setAddLoading] = useState(false);
   const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState<AvatarOptionKey>('profile');
+  const [selectedAvatar, setSelectedAvatar] = useState<AvatarOptionKey>(customization.avatarKey);
 
   const cardBg = useThemeColor({ light: '#FFFFFF', dark: '#2A1826' }, 'background');
   const cardBorder = useThemeColor({ light: '#F0D5E4', dark: '#3D2840' }, 'icon');
@@ -45,6 +53,14 @@ export default function ProfileScreen() {
   const selectedAvatarSource = avatarOptions[selectedAvatar];
 
   const contentTop = insets.top + 10 + 42 + 16;
+
+  useEffect(() => {
+    setDisplayNameInput(customization.displayName);
+    setBioInput(customization.bio);
+    setPronounsInput(customization.pronouns);
+    setCityInput(customization.city);
+    setSelectedAvatar(customization.avatarKey);
+  }, [customization]);
 
   const onCopyCode = async () => {
     if (!profile?.friend_code) return;
@@ -65,6 +81,17 @@ export default function ProfileScreen() {
     } finally {
       setAddLoading(false);
     }
+  };
+
+  const onSaveCustomization = () => {
+    updateProfile({
+      displayName: displayNameInput.trim() || 'Frimds User',
+      bio: bioInput.trim() || 'Say hi and join me at community events!',
+      pronouns: pronounsInput.trim() || 'they/them',
+      city: cityInput.trim() || 'Local',
+      avatarKey: selectedAvatar,
+    });
+    Alert.alert('Saved', 'Your profile customization is updated.');
   };
 
   return (
@@ -126,6 +153,9 @@ export default function ProfileScreen() {
                   </View>
                 </Pressable>
                 <View style={styles.profileTextCol}>
+                  <ThemedText type="defaultSemiBold" style={styles.displayNameText}>
+                    {displayNameInput || 'Frimds User'}
+                  </ThemedText>
                   <ThemedText style={[styles.labelSmall, { color: labelMuted }]}>Your friend code</ThemedText>
                   <View style={styles.codeRow}>
                     <ThemedText type="defaultSemiBold" style={styles.friendCode}>
@@ -149,6 +179,83 @@ export default function ProfileScreen() {
                   </ThemedText>
                 </View>
               </View>
+            </View>
+
+            <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+              <ThemedText style={[styles.labelSmall, { color: labelMuted }]}>Customize profile</ThemedText>
+              <TextInput
+                value={displayNameInput}
+                onChangeText={setDisplayNameInput}
+                placeholder="Display name"
+                placeholderTextColor={labelMuted}
+                style={[
+                  styles.input,
+                  { color: textColor, borderColor: cardBorder, backgroundColor: inputBg },
+                ]}
+              />
+              <TextInput
+                value={pronounsInput}
+                onChangeText={setPronounsInput}
+                placeholder="Pronouns"
+                placeholderTextColor={labelMuted}
+                style={[
+                  styles.input,
+                  { color: textColor, borderColor: cardBorder, backgroundColor: inputBg },
+                ]}
+              />
+              <TextInput
+                value={cityInput}
+                onChangeText={setCityInput}
+                placeholder="City / area"
+                placeholderTextColor={labelMuted}
+                style={[
+                  styles.input,
+                  { color: textColor, borderColor: cardBorder, backgroundColor: inputBg },
+                ]}
+              />
+              <TextInput
+                value={bioInput}
+                onChangeText={setBioInput}
+                placeholder="Short bio"
+                placeholderTextColor={labelMuted}
+                multiline
+                style={[
+                  styles.input,
+                  styles.bioInput,
+                  { color: textColor, borderColor: cardBorder, backgroundColor: inputBg },
+                ]}
+              />
+
+              <View style={styles.interestsWrap}>
+                {interestsSource.map((interest) => {
+                  const isSelected = selectedInterests.includes(interest);
+                  return (
+                    <Pressable
+                      key={interest}
+                      onPress={() => toggleInterest(interest)}
+                      style={[
+                        styles.interestChip,
+                        {
+                          borderColor: isSelected ? tint : cardBorder,
+                          backgroundColor: isSelected ? 'rgba(255, 143, 183, 0.14)' : inputBg,
+                        },
+                      ]}>
+                      <ThemedText style={[styles.interestChipText, { color: labelMuted }]}>
+                        {interest}
+                      </ThemedText>
+                    </Pressable>
+                  );
+                })}
+              </View>
+
+              <Pressable
+                onPress={onSaveCustomization}
+                style={({ pressed }) => [
+                  styles.addButton,
+                  { backgroundColor: tint, opacity: pressed ? 0.9 : 1 },
+                ]}>
+                <ThemedText style={styles.addButtonText}>Save customization</ThemedText>
+              </Pressable>
             </View>
 
             <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
@@ -220,6 +327,7 @@ export default function ProfileScreen() {
                     key={key}
                     onPress={() => {
                       setSelectedAvatar(key);
+                      updateProfile({ avatarKey: key });
                       setIsAvatarPickerOpen(false);
                     }}
                     style={[
@@ -305,6 +413,10 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
   },
+  displayNameText: {
+    marginTop: 2,
+    fontSize: 18,
+  },
   labelSmall: {
     fontSize: 13,
     marginBottom: 4,
@@ -349,6 +461,26 @@ const styles = StyleSheet.create({
     fontSize: 17,
     letterSpacing: 2,
     marginBottom: 12,
+  },
+  bioInput: {
+    minHeight: 86,
+    textAlignVertical: 'top',
+    letterSpacing: 0,
+  },
+  interestsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 12,
+  },
+  interestChip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  interestChipText: {
+    fontSize: 12,
   },
   addButton: {
     borderRadius: 12,
