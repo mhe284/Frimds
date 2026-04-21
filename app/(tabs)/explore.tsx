@@ -1,65 +1,97 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useFrimdsData, type EventCategory } from '@/hooks/use-frimds-data';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
-/** Replace with real friend data. Empty = hint card. */
-const friends: { id: string }[] = [];
+const interestSource: EventCategory[] = ['Gaming', 'Music', 'Sports', 'Art', 'Food', 'Streaming'];
 
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
-  const colorScheme = useColorScheme() ?? 'light';
-  const hasFriends = friends.length > 0;
+  const { areas, selectedArea, setSelectedArea, selectedInterests, toggleInterest, recommendations } = useFrimdsData();
 
   const cardBg = useThemeColor({ light: '#FFFFFF', dark: '#2A1826' }, 'background');
   const cardBorder = useThemeColor({ light: '#F0D5E4', dark: '#3D2840' }, 'icon');
-  const avatarBorder = useThemeColor({ light: '#E8C4D8', dark: '#5C3D52' }, 'icon');
-  const avatarFill = useThemeColor({ light: '#FFF9FC', dark: '#1E121C' }, 'background');
   const hintColor = useThemeColor({ light: '#6B5A62', dark: '#C4B0BC' }, 'text');
-
-  const emptyCardBg =
-    colorScheme === 'dark' ? 'rgba(42, 24, 38, 0.42)' : 'rgba(255, 255, 255, 0.48)';
-  const emptyCardBorder =
-    colorScheme === 'dark' ? 'rgba(93, 60, 82, 0.4)' : 'rgba(240, 213, 228, 0.55)';
+  const chipBg = useThemeColor({ light: '#FFF2F8', dark: '#342433' }, 'background');
 
   const contentTop = insets.top + 10 + 42 + 16;
 
   return (
     <ThemedView style={styles.screen}>
-      <View style={[styles.body, { paddingTop: contentTop, paddingHorizontal: 16 }]}>
-        {hasFriends ? (
-          <View style={[styles.friendsCard, { backgroundColor: cardBg, borderColor: cardBorder }]}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator
-              contentContainerStyle={styles.friendsRow}
-              keyboardShouldPersistTaps="handled">
-              {friends.map((f) => (
-                <View
-                  key={f.id}
+      <ScrollView
+        style={styles.body}
+        contentContainerStyle={{ paddingTop: contentTop, paddingHorizontal: 16, paddingBottom: 30, gap: 14 }}
+        showsVerticalScrollIndicator={false}>
+        <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+          <Text style={styles.sectionTitle}>Find people near you</Text>
+          <Text style={[styles.sectionHint, { color: hintColor }]}>Choose area and interests to refresh recommendations.</Text>
+
+          <View style={styles.chipWrap}>
+            {areas.map((area) => {
+              const isActive = area === selectedArea;
+              return (
+                <Pressable
+                  key={area}
+                  onPress={() => setSelectedArea(area)}
                   style={[
-                    styles.friendAvatar,
-                    { backgroundColor: avatarFill, borderColor: avatarBorder },
-                  ]}
-                />
+                    styles.chip,
+                    {
+                      borderColor: isActive ? '#B46885' : cardBorder,
+                      backgroundColor: isActive ? '#F9DDE9' : chipBg,
+                    },
+                  ]}>
+                  <Text style={[styles.chipText, { color: isActive ? '#8D4A69' : '#7B5A69' }]}>{area}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <View style={styles.chipWrap}>
+            {interestSource.map((interest) => {
+              const isActive = selectedInterests.includes(interest);
+              return (
+                <Pressable
+                  key={interest}
+                  onPress={() => toggleInterest(interest)}
+                  style={[
+                    styles.chip,
+                    {
+                      borderColor: isActive ? '#508B6B' : cardBorder,
+                      backgroundColor: isActive ? '#E2F3EA' : chipBg,
+                    },
+                  ]}>
+                  <Text style={[styles.chipText, { color: isActive ? '#3E775A' : '#7B5A69' }]}>{interest}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+          <Text style={styles.sectionTitle}>Recommended friends</Text>
+          {recommendations.length > 0 ? (
+            <View style={styles.recommendationList}>
+              {recommendations.map((person) => (
+                <View key={person.id} style={[styles.recommendationCard, { borderColor: cardBorder }]}>
+                  <View style={styles.personTopRow}>
+                    <Text style={styles.personName}>{person.name}</Text>
+                    <View style={[styles.distancePill, { backgroundColor: chipBg }]}>
+                      <Text style={styles.distanceText}>{person.distanceKm} km</Text>
+                    </View>
+                  </View>
+                  <Text style={[styles.personMeta, { color: hintColor }]}>{person.area} area</Text>
+                  <Text style={[styles.personBio, { color: hintColor }]}>{person.bio}</Text>
+                  <Text style={styles.personTags}>{person.interests.join(' • ')}</Text>
+                </View>
               ))}
-            </ScrollView>
-          </View>
-        ) : (
-          <View
-            style={[
-              styles.emptyFriendsCard,
-              { backgroundColor: emptyCardBg, borderColor: emptyCardBorder },
-            ]}>
-            <ThemedText style={[styles.emptyHint, { color: hintColor }]}>
-              Add friends and they&apos;ll show up here.
-            </ThemedText>
-          </View>
-        )}
-      </View>
+            </View>
+          ) : (
+            <Text style={[styles.sectionHint, { color: hintColor }]}>No matches yet. Try broadening filters.</Text>
+          )}
+        </View>
+      </ScrollView>
 
       <View
         pointerEvents="none"
@@ -83,38 +115,81 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
   },
-  friendsCard: {
+  card: {
     borderRadius: 18,
     borderWidth: 1,
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    overflow: 'hidden',
+    padding: 14,
+    gap: 10,
   },
-  emptyFriendsCard: {
-    borderRadius: 18,
-    borderWidth: 1,
-    paddingVertical: 22,
-    paddingHorizontal: 18,
-    minHeight: 96,
-    justifyContent: 'center',
+  sectionTitle: {
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 20,
+    color: '#A55474',
   },
-  emptyHint: {
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: 'center',
-    opacity: 0.92,
+  sectionHint: {
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 14,
+    lineHeight: 20,
   },
-  friendsRow: {
+  chipWrap: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 4,
+    flexWrap: 'wrap',
+    gap: 8,
   },
-  friendAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    borderWidth: 2,
+  chip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  chipText: {
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 12,
+  },
+  recommendationList: {
+    gap: 10,
+  },
+  recommendationCard: {
+    borderWidth: 1,
+    borderRadius: 14,
+    padding: 12,
+    gap: 4,
+  },
+  personTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
+  personName: {
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 17,
+    color: '#6F3B56',
+  },
+  distancePill: {
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  distanceText: {
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 12,
+    color: '#7B5A69',
+  },
+  personMeta: {
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 12,
+  },
+  personBio: {
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  personTags: {
+    marginTop: 2,
+    fontFamily: 'Fredoka_600SemiBold',
+    fontSize: 12,
+    color: '#508B6B',
   },
   bubbleTitleAnchor: {
     position: 'absolute',
